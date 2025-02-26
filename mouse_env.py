@@ -14,6 +14,16 @@ class ActionEnum(IntEnum):
     BAS = 2
     GAUCHE = 3
 
+def get_arrow(action:ActionEnum):
+    match action:
+        case ActionEnum.HAUT:
+            return "⬆️"
+        case ActionEnum.BAS:
+            return "⬇️"
+        case ActionEnum.GAUCHE:
+            return "⬅️"
+        case ActionEnum.DROITE:
+            return "➡️"
 
 class MouseEnv:
     def __init__(self):
@@ -30,7 +40,7 @@ class MouseEnv:
         grid = [['      ' for _ in range(3)] for _ in range(3)]
         row, col = self.mouse_position
         # Place a dot at the given coordinate
-        grid[row][col] = '  🐁  '
+        grid[row][col] = '  🐭  '
         row_cheese, col_cheese = self.cheese_position
         grid[row_cheese][col_cheese] = '  🧀  '
         row_lots_of_cheese, col_lots_of_cheese = self.lots_of_cheese_position
@@ -48,6 +58,9 @@ class MouseEnv:
                     print('|', end=' ')
             print()  # New line after each row
             print()  # New line after each row
+
+    def observation(self):
+        return self.mouse_position[0] * 3 + self.mouse_position[1]
 
     def step(self, action: int):
         prior_position = self.mouse_position.copy()
@@ -67,20 +80,34 @@ class MouseEnv:
         else:
             reward = 0
         self.moves_played += 1
-        return self.mouse_position, reward, self.moves_played < 4, self.moves_played
+        return self.observation(), reward, self.moves_played >= 4, self.moves_played
+steps_before_pause = 0
+def pause_if_necessary():
+    global steps_before_pause
+    if steps_before_pause <= 0:
+        try:
+            steps_before_pause = int(input())
+        except ValueError:
+            steps_before_pause = 1
+    steps_before_pause -=1
 
+def display_move(action, position, reward, moves, env):
+    print("-" * 30)
+    print(f"Action: {get_arrow(action)} , recompense : {reward}, position : {position}, nombre de mouvements total : {moves}")
+    env.render()
 
 def main():
     env = MouseEnv()
     env.render()
     input()
-    for i in range(4):
-        action = randint(0,3)
+    for i in range(1000):
+        action = randint(0, 3)
         position, reward, terminated, moves = env.step(action)
-        print("-"*30)
-        print(f"Action: {ActionEnum(action).name}, recompense : {reward}, mouvement(s) : {moves}")
-        env.render()
-        input()
+        display_move(action, position, reward, moves, env)
+        if terminated:
+            env.reset()
+
+        pause_if_necessary()
 
 
 if __name__ == '__main__':
