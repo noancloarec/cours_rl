@@ -84,7 +84,7 @@ class MouseEnv:
         else:
             reward = 0
         self.moves_played += 1
-        return self.observation(), reward, self.moves_played >= 4, self.moves_played
+        return self.observation(), reward, self.moves_played >= 8, self.moves_played
 steps_before_pause = 0
 def pause_if_necessary():
     global steps_before_pause

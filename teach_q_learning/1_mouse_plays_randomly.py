@@ -15,8 +15,8 @@ def main():
             # Chose the action to perform randomly
             action = randint(0, 3)
             # Perform the action on the env
-            position, reward, terminated, moves = env.step(action)
-            display_move(action, position, reward, moves, env)
+            position, reward, terminated, nb_moves = env.step(action)
+            display_move(action, position, reward, nb_moves, env)
             cumulated_reward+=reward
 
 

@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 from mouse_env import MouseEnv, display_move, pause_if_necessary, display_q_table
 
-def policy_greedy(state:int, q_table: np.ndarray, epsilon:float):
+def policy_epsilon_greedy(state:int, q_table: np.ndarray, epsilon:float):
     if np.random.sample() < epsilon:
         return randint(0,3)
     candidates= np.argwhere(q_table[state] == q_table[state].max())
@@ -21,14 +21,15 @@ def main():
     position = 0
     rewards_per_episode = []
 
-    NB_EPISODES = 1000
+    NB_EPISODES = 500
     for i in range(NB_EPISODES):
         position = 0
         cumulated_reward = 0
 
         while True:
             # Chose the action to perform randomly
-            action = policy_greedy(position, q_table, 0.2)
+            epsilon = 0.3 if i < 450 else 0
+            action = policy_epsilon_greedy(position, q_table, epsilon)
 
             # Perform the action on the env
             position_after_move, reward, terminated, moves = env.step(action)
